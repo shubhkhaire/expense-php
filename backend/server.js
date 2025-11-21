@@ -7,6 +7,15 @@ const fs = require("fs");
 const { createTables } = require("./models/init");
 const { startReminders } = require("./utils/reminder");
 
+const cors = require("cors");
+app.use(
+  cors({
+    origin: "*", // later we restrict to your frontend domain
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
