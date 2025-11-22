@@ -3,8 +3,8 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-// Determine API base: prefer `window.APP_API` or `window.API`, fallback to localhost
-const API_BASE = window.APP_API || window.API || "http://localhost:5000";
+// Determine API base: prefer `window.APP_API` or `window.API`, fallback to Laravel dev server
+const API_BASE = window.APP_API || window.API || "http://127.0.0.1:8000";
 
 async function apiFetch(url, opts = {}) {
   const headers = opts.headers || {};

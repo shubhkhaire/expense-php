@@ -5,7 +5,7 @@
    =============================== */
 
 // Change API base if needed
-const API = "http://localhost:5000";
+const API = "http://127.0.0.1:8000/";
 // expose to other frontend modules that may use relative URLs
 window.API = API;
 

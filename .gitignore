@@ -2,6 +2,16 @@
 backend/node_modules/
 frontend/node_modules/
 
+# Laravel / PHP (backend_laravel_app)
+backend_laravel_app/node_modules/
+backend_laravel_app/vendor/
+backend_laravel_app/.env
+backend_laravel_app/.env.*
+backend_laravel_app/storage/
+backend_laravel_app/bootstrap/cache/
+backend_laravel_app/public/uploads/
+!backend_laravel_app/public/uploads/.gitkeep
+
 # Logs
 *.log
 npm-debug.log*
@@ -19,6 +29,9 @@ frontend/dist/
 # Upload folders (Multer)
 backend/uploads/
 !backend/uploads/.gitkeep
+
+# PHPUnit / test caches
+.phpunit.result.cache
 
 # OS files
 .DS_Store
