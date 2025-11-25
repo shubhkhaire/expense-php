@@ -5,7 +5,8 @@
    =============================== */
 
 // Change API base if needed
-const API = "http://127.0.0.1:8000/";
+// API endpoints are served under `/api` (see backend routes/web.php grouping)
+const API = "http://127.0.0.1:8000/api";
 // expose to other frontend modules that may use relative URLs
 window.API = API;
 
@@ -115,7 +116,7 @@ if (document.getElementById("loginForm")) {
 
 if (document.getElementById("expenseForm")) {
   const token = getToken();
-  if (!token) window.location = "/"; // require login
+  // In dev mode we don't require a token to view dashboard; proceed without forcing a redirect.
 
   /* ---------- LOGOUT ---------- */
   const logoutBtn =
@@ -123,7 +124,7 @@ if (document.getElementById("expenseForm")) {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("token");
-      window.location = "/";
+      // Stay on dashboard in dev mode
     });
   }
 
@@ -133,9 +134,9 @@ if (document.getElementById("expenseForm")) {
   // Load categories into the dashboard category select
   async function loadCategoriesForDashboard() {
     try {
-      const res = await fetch(`${API}/categories`, {
-        headers: { Authorization: "Bearer " + token },
-      });
+      const opts = {};
+      if (token) opts.headers = { Authorization: "Bearer " + token };
+      const res = await fetch(`${API}/categories`, opts);
       const body = await res.json();
       const cats = Array.isArray(body) ? body : body?.data || body || [];
       const sel = document.getElementById("categorySelect");
@@ -172,11 +173,9 @@ if (document.getElementById("expenseForm")) {
     if (catEl && catEl.value) fd.append("category_id", catEl.value);
     if (receipt) fd.append("receipt", receipt);
 
-    const res = await fetch(`${API}/expenses`, {
-      method: "POST",
-      headers: { Authorization: "Bearer " + token },
-      body: fd,
-    });
+    const opts = { method: "POST", body: fd };
+    if (token) opts.headers = { Authorization: "Bearer " + token };
+    const res = await fetch(`${API}/expenses`, opts);
 
     const data = await res.json();
 
@@ -200,11 +199,10 @@ if (document.getElementById("expenseForm")) {
     if (!res.ok) {
       console.error("Failed to load expenses", res);
       if (res.status === 401) {
-        // token invalid or expired — force login
         try {
           localStorage.removeItem("token");
         } catch (e) {}
-        window.location = "/";
+        // Development mode: do not redirect to removed login page. Stay on dashboard.
         return;
       }
       if (list)

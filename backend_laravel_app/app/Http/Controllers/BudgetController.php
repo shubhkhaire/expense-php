@@ -10,7 +10,8 @@ class BudgetController extends Controller
 {
     public function store(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
+        // Authenticated user
+        $user_id = $request->user->id ?? null;
 
         $month = $request->input('month');
         $category_id = $request->input('category_id');
@@ -29,7 +30,7 @@ class BudgetController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user_id = $request->user->id ?? 1;
+        $user_id = $request->user->id ?? null;
 
             $allocated_amount = $request->input('allocated_amount') ?? 0;
 
@@ -42,7 +43,7 @@ class BudgetController extends Controller
 
     public function index(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
+        $user_id = $request->user->id ?? null;
 
         $rows = Budget::where('user_id', $user_id)->orderBy('month', 'desc')->get();
         $data = $rows->map(function($b) use ($user_id){
@@ -57,7 +58,7 @@ class BudgetController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $user_id = $request->user->id ?? 1;
+        $user_id = $request->user->id ?? null;
 
         $b = Budget::where('id', $id)->where('user_id', $user_id)->first();
         if (!$b) return response()->json(['message' => 'Budget not found'], 404);

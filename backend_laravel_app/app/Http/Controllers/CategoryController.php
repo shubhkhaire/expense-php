@@ -9,15 +9,16 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        // Authentication removed for local development — default to demo user id 1
-        $userId = $request->user->id ?? 1;
+        // Authenticated user: return categories for user
+        $userId = $request->user->id ?? null;
         $rows = Category::where('user_id', $userId)->orderBy('name', 'asc')->get();
         return response()->json($rows);
     }
 
     public function store(Request $request)
     {
-        $userId = $request->user->id ?? 1;
+        // Authenticated user
+        $userId = $request->user->id ?? null;
         $name = $request->input('name') ?? 'Uncategorized';
         $icon = $request->input('icon');
         $color = $request->input('color');
@@ -35,7 +36,7 @@ class CategoryController extends Controller
 
     public function show(Request $request, $id)
     {
-        $userId = $request->user->id ?? 1;
+        // No authentication: return category by id
         $cat = Category::where('id', $id)->where('user_id', $userId)->first();
         if (!$cat) return response()->json(['message' => 'Category not found'], 404);
         return response()->json($cat);
@@ -43,7 +44,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $userId = $request->user->id ?? 1;
+        $userId = $request->user->id ?? null;
         $name = $request->input('name');
         $icon = $request->input('icon');
         $color = $request->input('color');
@@ -65,7 +66,7 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $userId = $request->user->id ?? 1;
+        $userId = $request->user->id ?? null;
         $cat = Category::where('id', $id)->where('user_id', $userId)->first();
         if (!$cat) return response()->json(['message' => 'Category not found'], 404);
         $cat->delete();

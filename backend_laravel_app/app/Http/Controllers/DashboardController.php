@@ -10,8 +10,7 @@ class DashboardController extends Controller
 {
     public function monthlyTotals(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
-
+        $user_id = $request->user->id ?? null;
         $year = $request->query('year', date('Y'));
         $rows = Expense::selectRaw('MONTH(date) as month, IFNULL(SUM(amount),0) as total')
             ->where('user_id', $user_id)
@@ -30,12 +29,11 @@ class DashboardController extends Controller
 
     public function categorySpending(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
-
+        $user_id = $request->user->id ?? null;
         $start = $request->query('startDate', '1970-01-01');
         $end = $request->query('endDate', '9999-12-31');
 
-        $rows = Category::leftJoin('expenses as e', function($join) use ($user_id, $start, $end) {
+        $rows = Category::leftJoin('expenses as e', function($join) use ($start, $end, $user_id) {
             $join->on('categories.id', '=', 'e.category_id')
                  ->where('e.user_id', $user_id)
                  ->whereBetween('e.date', [$start, $end]);
@@ -51,8 +49,7 @@ class DashboardController extends Controller
 
     public function chartData(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
-
+        $user_id = $request->user->id ?? null;
         $year = $request->query('year', date('Y'));
 
         $monthlyRows = Expense::selectRaw('MONTH(date) as month, IFNULL(SUM(amount),0) as total')
@@ -67,7 +64,7 @@ class DashboardController extends Controller
             $monthly[] = $found ? (float)$found->total : 0;
         }
 
-        $catRows = Category::leftJoin('expenses as e', function($join) use ($user_id, $year) {
+        $catRows = Category::leftJoin('expenses as e', function($join) use ($year, $user_id) {
             $join->on('categories.id', '=', 'e.category_id')
                  ->where('e.user_id', $user_id)
                  ->whereRaw('YEAR(e.date) = ?', [$year]);

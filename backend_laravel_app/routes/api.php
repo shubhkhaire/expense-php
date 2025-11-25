@@ -14,21 +14,27 @@ use App\Http\Controllers\DevController;
 // Dev seed (unguarded depending on env)
 Route::post('/dev/seed', [DevController::class, 'seed']);
 
-// Routes are unguarded for local development — authentication removed per user request.
-Route::apiResource('categories', CategoryController::class)->only([
-    'index', 'store', 'show', 'update', 'destroy'
-]);
+// Authentication endpoints (public)
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/auth/me', [AuthController::class, 'me'])->middleware('jwt.auth');
+// Protected API routes: require JWT auth so each user sees their own data
+Route::middleware('jwt.auth')->group(function () {
+    Route::apiResource('categories', CategoryController::class)->only([
+        'index', 'store', 'show', 'update', 'destroy'
+    ]);
 
-Route::get('/dashboard/monthly-totals', [DashboardController::class, 'monthlyTotals']);
-Route::get('/dashboard/category-spending', [DashboardController::class, 'categorySpending']);
-Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData']);
+    Route::get('/dashboard/monthly-totals', [DashboardController::class, 'monthlyTotals']);
+    Route::get('/dashboard/category-spending', [DashboardController::class, 'categorySpending']);
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData']);
 
-Route::post('/expenses', [ExpenseController::class, 'store']);
-Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
-Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy']);
-Route::get('/expenses', [ExpenseController::class, 'index']);
+    Route::post('/expenses', [ExpenseController::class, 'store']);
+    Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
+    Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy']);
+    Route::get('/expenses', [ExpenseController::class, 'index']);
 
-Route::post('/budgets', [BudgetController::class, 'store']);
-Route::put('/budgets/{id}', [BudgetController::class, 'update']);
-Route::get('/budgets', [BudgetController::class, 'index']);
-Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
+    Route::post('/budgets', [BudgetController::class, 'store']);
+    Route::put('/budgets/{id}', [BudgetController::class, 'update']);
+    Route::get('/budgets', [BudgetController::class, 'index']);
+    Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
+});

@@ -6,6 +6,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Also load API routes directly so the frontend can call endpoints at root (e.g. /auth/login)
-// This keeps the original Express-style routes intact for development.
-require __DIR__ . '/api.php';
+// Load API routes under the /api prefix and use the 'api' middleware group.
+// This prevents CSRF checks for API-style endpoints and keeps a clear separation
+// between web pages and programmatic API calls.
+Route::prefix('api')->middleware('api')->group(function () {
+    require __DIR__ . '/api.php';
+});

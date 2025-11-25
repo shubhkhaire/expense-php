@@ -11,8 +11,8 @@ class ExpenseController extends Controller
 {
     public function store(Request $request)
     {
-        // Authentication removed for local development — default to demo user id 1 when absent
-        $user_id = $request->user->id ?? 1;
+        // Authenticated user
+        $user_id = $request->user->id ?? null;
 
         // Accept any incoming fields without strict validation in dev
         $amount = $request->input('amount');
@@ -39,8 +39,7 @@ class ExpenseController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user_id = $request->user->id ?? 1;
-
+        $user_id = $request->user->id ?? null;
         $expense = Expense::where('id', $id)->where('user_id', $user_id)->first();
         if (!$expense) return response()->json(['message' => 'Expense not found'], 404);
 
@@ -67,8 +66,7 @@ class ExpenseController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $user_id = $request->user->id ?? 1;
-
+        $user_id = $request->user->id ?? null;
         $expense = Expense::where('id', $id)->where('user_id', $user_id)->first();
         if (!$expense) return response()->json(['message' => 'Expense not found'], 404);
         $expense->delete();
@@ -77,7 +75,8 @@ class ExpenseController extends Controller
 
     public function index(Request $request)
     {
-        $user_id = $request->user->id ?? 1;
+        // Authenticated user
+        $user_id = $request->user->id ?? null;
 
         $startDate = $request->query('startDate');
         $endDate = $request->query('endDate');
